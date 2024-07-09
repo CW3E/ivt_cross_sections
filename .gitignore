@@ -1,0 +1,96 @@
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+*.pyc
+*.x
+
+# Compressed Packages and Package Images #
+############
+*.7z
+*.dmg
+*.iso
+*.jar
+*.rar
+*.tar
+*.gz
+*.sif
+*.simg
+*.zip
+
+# Logs and databases #
+######################
+*.out
+*.err
+*.abort
+*.lock
+*.store
+*.log
+*.sql
+*.sqlite
+*.e*
+*.o*
+rsl*
+*.txt
+core.*
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# no vim backups #
+##################
+*~
+*.swp
+*.swo
+
+# no temporary file artifacts #
+##################
+.~lock*
+\#*
+*\#
+*.tmp
+*.temp
+
+# no actual data #
+##################
+*.nc
+*.dat
+wrfout*
+wrfrst*
+wrfbdy_*
+wrfinput_*
+auxhist*
+*.rds
+*.mat
+*.bin
+*.grib
+*.grib2
+*.grb
+*.grb2
+*.hist.*
+*.diag.*
+*DATA*
+*.TBL
+
+# no images unless explicitly committed #
+##################
+*.png
+*.pdf
+*.jpg
+*.jpeg
+*.gif
+
+# other
+# ###############
+.ipynb_checkpoints/*
