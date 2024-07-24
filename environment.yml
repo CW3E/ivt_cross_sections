@@ -1,0 +1,21 @@
+name: cw3e-wrf
+channels:
+  - conda-forge
+  - defaults  
+dependencies:
+  - python
+  - pip
+  - numpy
+  - matplotlib
+  - pandas
+  - netcdf4
+  - xarray
+  - cartopy
+  - cmocean
+  - seaborn
+  - cmocean
+  - ipykernel
+  - pyyaml
+  - metpy
+  - cfgrib
+  - wrf-python

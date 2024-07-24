@@ -93,4 +93,5 @@ auxhist*
 
 # other
 # ###############
+*.idx
 .ipynb_checkpoints/*
