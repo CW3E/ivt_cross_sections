@@ -15,17 +15,11 @@ import xarray as xr
 import numpy as np
 import pandas as pd
 import datetime
-import metpy.calc as mpcalc
-from metpy.units import units
 import cartopy.crs as ccrs
 
 sys.path.append('../file-reader-toolkit') # point this to where you have the CW3E cmaps_toolkit repo located
 import calculations
-
-def zero_degree_isotherm(height):
-    # calculating freezing level on pressure
-    z0_pres = mpcalc.height_to_pressure_std(height)
-    return z0_pres
+import calc_funcs as cfuncs
 
 def read_gfs_deterministic(filename, vardict, show_catalog=False):
 
@@ -260,8 +254,7 @@ class load_GFS_datasets:
         gfs = read_gfs_deterministic(filename=self.fname,vardict=gfs_vardict, show_catalog=False)
         
         ## get freezing level on pressure levels
-        hgts = gfs['freezing_level'].values * units(gfs['freezing_level'].units)
-        freezing_level = zero_degree_isotherm(hgts).magnitude
+        freezing_level = cfuncs.calculate_zero_degree_isotherm( gfs['freezing_level'])
         
         #### Calculating IVT #####
         #extending pressure vector to 3d array to match rh shape
@@ -274,8 +267,10 @@ class load_GFS_datasets:
         gfs_uivt, gfs_vivt, gfs_ivt = calculations.ivt(u_wind=gfs["u_wind"].values,v_wind=gfs["v_wind"].values,specific_humidity=gfs_q, pressure=pressure_3d*100, sfc_pressure=gfs["sfc_pressure"].values)
 
         ## calculating wvflux
-        wv_flux = np.sqrt((gfs["u_wind"].values*gfs_q)**2 + (gfs["v_wind"].values*gfs_q)**2)
+        # wv_flux = np.sqrt((gfs["u_wind"].values*gfs_q)**2 + (gfs["v_wind"].values*gfs_q)**2)
+        density = cfuncs.calculate_air_density(pressure=pressure_3d, temperature=gfs["temperature"], relative_humidity=gfs["rh"])
         
+        wv_flux = cfuncs.calculate_wvflux(uwind=gfs["u_wind"].values, vwind=gfs["v_wind"].values, density=density, specific_humidity=gfs_q)
         
         # BUILD DATASET
         ## 3D vars
@@ -302,4 +297,119 @@ class load_GFS_datasets:
                                 ) 
 
 
+        return model_data
+    
+class load_ECMWF_datasets:
+    '''
+    Loads variables needed for ivt cross section plots from ECMWF grb files
+    
+    Parameters
+    ----------
+    F : int
+        the forecast lead requested
+        
+    fdate : str
+        string of date for the filename in YYYYMMDDHH format
+  
+    Returns
+    -------
+    xarray : 
+        xarray dataset object with variables
+    
+    '''
+    def __init__(self, F, fdate=None):
+        
+        if fdate is not None:
+            date_string = fdate
+            fpath = '/data/downloaded/Forecasts/ECMWF/NRT_data/{0}'.format(fdate)
+            date_string = fdate
+            print(date_string)
+
+        else:
+            path_to_data = '/data/downloaded/Forecasts/ECMWF/NRT_data/*'
+            list_of_files = glob.glob(path_to_data)
+            fpath = max(list_of_files, key=os.path.getctime)
+            regex = re.compile(r'\d+')
+            date_string = regex.findall(fpath)[-1]
+            print(date_string)
+
+
+        init_time = datetime.datetime.strptime(date_string,'%Y%m%d%H%M')
+        lead_time = datetime.timedelta(hours=F)
+
+        ecmwf_s2d_filename = "/S2D{init:%m%d%H%M}{valid:%m%d%H%M}1.grb".format(init=init_time, valid=init_time+lead_time)
+        ecmwf_s1d_filename = "/S1D{init:%m%d%H%M}{valid:%m%d%H%M}1".format(init=init_time, valid=init_time+lead_time)
+
+         ## for now: copy the files to local space
+        repo_path = '/home/dnash/comet_data/tmp'
+        # shutil.copy(fpath+ecmwf_s2d_filename, repo_path+ecmwf_s2d_filename) # copy file over to data folder
+        # shutil.copy(fpath+ecmwf_s1d_filename, repo_path+ecmwf_s1d_filename) # copy file over to data folder 
+
+        self.ecmwf_s2d_filename = repo_path+"/S2D{init:%m%d%H%M}{valid:%m%d%H%M}1.grb".format(init=init_time, valid=init_time+lead_time)
+        self.ecmwf_s1d_filename = repo_path+"/S1D{init:%m%d%H%M}{valid:%m%d%H%M}1".format(init=init_time, valid=init_time+lead_time)
+
+    def calc_vars(self):
+        ecmwf_s2d_vardict = {
+                    "u_wind":{"shortName":'u'},#U-component of wind
+                    "v_wind":{"shortName":'v'}, #V-component of wind
+                    "specific_humidity":{"shortName":'q'},#Specific humidity
+                    "temperature":{"shortName":"t"} #Temperature
+                        }
+
+        ecmwf_s1d_vardict = {
+                        "sfc_pressure":{"shortName":'sp'},
+                        "iwv":{"shortName":'tcw'},
+                        "freezing_level": {'shortName': 'deg0l'}
+                        }
+
+        ##reading ecmwf s1d and s2d files
+        ##ecmwf is a dictionary of datasets
+        ecmwf_s2d = read_ecmwf_S2D(filename=self.ecmwf_s2d_filename,vardict=ecmwf_s2d_vardict, show_catalog=False)
+        ecmwf_s1d = read_ecmwf_S1D(filename=self.ecmwf_s1d_filename,vardict=ecmwf_s1d_vardict, show_catalog=False)
+
+        ### calculating ivt
+        ecmwf_uivt, ecmwf_vivt, ecmwf_ivt = calculations.ivt(u_wind=ecmwf_s2d["u_wind"].values,v_wind=ecmwf_s2d["v_wind"].values,specific_humidity=ecmwf_s2d["specific_humidity"], pressure=ecmwf_s2d["pressure"]*100)
+
+        ## calculating wvflux
+        rh = cfuncs.calc_relative_humidity_from_specific_humidity(ecmwf_s2d["pressure"].values, ecmwf_s2d["temperature"], ecmwf_s2d["specific_humidity"])
+        density = cfuncs.calculate_air_density(pressure=ecmwf_s2d["pressure"].values, temperature=ecmwf_s2d["temperature"], relative_humidity=rh)
+        
+        wv_flux = cfuncs.calculate_wvflux(uwind=ecmwf_s2d["u_wind"].values, vwind=ecmwf_s2d["v_wind"].values, density=density, specific_humidity=ecmwf_s2d["specific_humidity"].values)
+        
+        wv_flux = xr.DataArray(wv_flux, name="wvflux", 
+                             dims=("hybrid", "latitude","longitude"), 
+                             coords={"hybrid": rh.hybrid.values, 
+                                     "latitude": rh.latitude.values, 
+                                     "longitude": rh.longitude.values})
+
+        ## creating a 3D latitude array for plotting
+        a = ecmwf_s2d["u_wind"].latitude
+        b = ecmwf_s2d["u_wind"]
+        a2, b2 = xr.broadcast(a, b)
+        a2.name = '3D_lat'
+        a2 = a2.transpose('hybrid', 'latitude', 'longitude')
+
+        ## putting u, v, and pressure and 3D lat into a dataset
+        ds_lst = [ecmwf_s2d["v_wind"], ecmwf_s2d["u_wind"], wv_flux, ecmwf_s2d["pressure"], a2]
+        ds1 = xr.merge(ds_lst)
+
+        ## get freezing level on pressure levels
+        freezing_level = cfuncs.calculate_zero_degree_isotherm( ecmwf_s1d["freezing_level"])
+
+        ## build final dataset
+        var_dict = {'ivt': (['latitude', 'longitude'], ecmwf_ivt),
+                    'iwv': (['latitude', 'longitude'], ecmwf_s1d["iwv"].values),
+                    'sfc_pressure': (['latitude', 'longitude'], ecmwf_s1d["sfc_pressure"].values),
+                    'freezing_level': (['latitude', 'longitude'], freezing_level)}
+
+        model_data = xr.Dataset(var_dict,
+                                coords={'latitude': (['latitude'], ecmwf_s1d["sfc_pressure"].latitude.values),
+                                        'longitude': (['longitude'], ecmwf_s1d["sfc_pressure"].longitude.values)},
+                               attrs={"model":"ECMWF", "init":ecmwf_s1d["sfc_pressure"].time.values, 
+                                      "valid_time":ecmwf_s1d["sfc_pressure"].valid_time.values, 
+                                      "datacrs":ccrs.PlateCarree(central_longitude=0)})
+
+        ## merge vertical level data and single level data
+        model_data = xr.merge([model_data, ds1])
+        
         return model_data
