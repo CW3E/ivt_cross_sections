@@ -71,8 +71,8 @@ extent = {"npacific":      {'ext': [115., 245., -10., 70.], # North Pacific (ext
                             'figsize': (10. ,8.5)
                            }, 
            
-           "ivtcross":    {'ext': [165., 245., 20., 70.], # Northeast Pacific plus a few (extent in 0-360)
-                            'xticks': [165, 175, -175, -165, -155, -145, -135, -125, -115],
+           "ivtcross":    {'ext': [180., 260., 20., 70.], # Northeast Pacific plus a few (extent in 0-360)
+                            'xticks': [-175, -165, -155, -145, -135, -125, -115, -110, -105],
                             'yticks': [20, 30, 40, 50, 60, 70],
                             'ccrs': ccrs.PlateCarree(central_longitude=180),
                             'figsize': (10. ,8.)

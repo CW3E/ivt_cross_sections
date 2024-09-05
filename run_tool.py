@@ -8,7 +8,7 @@ import sys
 import numpy as np
 
 from read_deterministic_data import load_GFS_datasets, load_ECMWF_datasets
-from plotter import plot_ivt_cross_sections
+from plot_cross_section import plot_ivt_cross_sections
 
 model_name = sys.argv[1]
 print('Creating ivt cross sections for {0}'.format(model_name))
@@ -17,7 +17,7 @@ print('Creating ivt cross sections for {0}'.format(model_name))
 F_lst = np.arange(6, 132, 12)
 
 ## create list that has the start and end points for the cross section
-lon_lst = np.arange(170., 245., 5.)
+lon_lst = np.arange(185., 260., 5.)
 line_lst = []
 for i, lon in enumerate(lon_lst):
     ## create list of lines where [start_lat, start_lon, end_lat, end_lon]

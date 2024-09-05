@@ -185,21 +185,6 @@ def draw_basemap(ax, datacrs=ccrs.PlateCarree(), extent=None, xticks=None, ytick
     
     return ax
 
-def add_subregion_boxes(ax, subregion_xy, width, height, ecolor, datacrs):
-    '''This function will add subregion boxes to the given axes.
-    subregion_xy 
-    [[ymin, xmin], [ymin, xmin]]
-    '''
-    for i in range(len(subregion_xy)):
-        ax.add_patch(mpatches.Rectangle(xy=subregion_xy[i], width=width[i], height=height[i],
-                                        fill=False,
-                                        edgecolor=ecolor,
-                                        linewidth=1.0,
-                                        transform=datacrs,
-                                        zorder=100))
-        
-    return ax
-
 
 def plot_ivt_cross_sections(ds, cross, line_lst, current_line, model_name, F):
     '''
@@ -251,8 +236,10 @@ def plot_ivt_cross_sections(ds, cross, line_lst, current_line, model_name, F):
     clon = ((current_lon + 180) % 360) - 180
     if clon > 0:
         lon_lbl = u"{:.0f}\N{DEGREE SIGN}E".format(clon)
+        flon_lbl = u"{:.0f}E".format(clon)
     else:
         lon_lbl = u"{:.0f}\N{DEGREE SIGN}W".format(clon*-1)
+        flon_lbl = u"{:.0f}W".format(clon*-1)
 
     wvflux_units = 'kg m$^{-2}$ s$^{-1}$'
     ivt_units = 'kg m$^{-1}$ s$^{-1}$'
@@ -289,7 +276,7 @@ def plot_ivt_cross_sections(ds, cross, line_lst, current_line, model_name, F):
 
     fig = plt.figure(figsize=(13.0, 5))
     fig.dpi = current_dpi
-    fname = 'figs/{0}/Cross_Section_latest_25-65N_{1}W_F{2}'.format(model_name, clon, str(F).zfill(3))
+    fname = 'figs/{0}/Cross_Section_latest_25-65N_{1}_F{2}'.format(model_name, flon_lbl, str(F).zfill(3))
     fmt = 'png'
 
     ####################
@@ -367,12 +354,12 @@ def plot_ivt_cross_sections(ds, cross, line_lst, current_line, model_name, F):
 
     # wind vectors
     if model_name == 'ECMWF':
-        dw = 10 # how often to plot vector vertically
-        dw2 = 17 # how often to plot horizontally
+        dw = 8 # how often to plot vector vertically
+        dw2 = 15 # how often to plot horizontally
         ax.barbs(x[::dw, ::dw2], ys[::dw, ::dw2], cross.u.values[::dw, ::dw2]*1.94384, cross.v.values[::dw, ::dw2]*1.94384, 
                  linewidth=0.25, length=3.5)
     elif model_name == 'GFS':
-        dw = 6 # how often to plot vector
+        dw = 5 # how often to plot vector
         ax.barbs(xs[::dw], ys[::dw], cross.u.values[::dw, ::dw]*1.944, cross.v.values[::dw, ::dw]*1.944, 
                  linewidth=0.25, length=3.5)
 
