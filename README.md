@@ -15,8 +15,8 @@ To run all longitudinal cross sections for each model:
 
 ```bash
 ## runs plots for GFS
-singularity exec --bind /data:/data,/home:/home,/work:/work,/common:/common -e /data/projects/containers/ivt_cross_sections/ivt_cross_sections.sif /opt/conda/bin/python /data/projects/operations/ivt_cross_sections/run_tool.py "GFS"
+singularity exec --bind /data:/data,/home:/home,/work:/work,/common:/common -e /data/projects/operations/ivt_cross_sections/envs/ivt_cross_section.sif /opt/conda/envs/container/bin/python /data/projects/operations/ivt_cross_sections/run_tool.py "GFS"
 
 ## runs plots for ECWMF
-singularity exec --bind /data:/data,/home:/home,/work:/work,/common:/common -e /data/projects/containers/ivt_cross_sections/ivt_cross_sections.sif /opt/conda/bin/python /data/projects/operations/ivt_cross_sections/run_tool.py "ECMWF"
+singularity exec --bind /data:/data,/home:/home,/work:/work,/common:/common -e /data/projects/operations/ivt_cross_sections/envs/ivt_cross_section.sif /opt/conda/envs/container/bin/python /data/projects/operations/ivt_cross_sections/run_tool.py "ECMWF"
 ```

@@ -1,0 +1,78 @@
+Bootstrap: localimage
+# TBD: Select the image you would like by removing the coment line
+#From: /data/projects/containers/miniconda/base/centos/7/Miniforge3.Centos7.2024.09.05.sif
+#From: /data/projects/containers/miniconda/base/rocky/8/Miniforge3.Rocky8.2024.09.05.sif
+From: /data/projects/containers/miniconda/base/rocky/9/Miniforge3.Rocky9.2024.09.05.sif
+
+%labels
+
+    APPLICATION_NAME Miniforge3 - CentOS 7.9.2009 - JupyterLab
+    APPLICATION_URL https://cw3e.ucsd.edu
+    APPLICATION_VERSION 1.0
+
+    AUTHOR_NAME Patrick Mulrooney
+    AUTHOR_EMAIL pmulrooney@ucsd.edu
+
+    LAST_UPDATED 2024.09.05
+
+%setup
+
+%environment
+    # Ensure conda is available in the path
+    PATH=/opt/conda/envs/container/bin:/opt/conda/bin:$PATH
+    # This will make sure conda environments can be activated
+    . /opt/conda/etc/profile.d/conda.sh
+    # Activate the environment automatically
+    export CONDA_DEFAULT_ENV=/opt/conda/envs/container
+    conda activate /opt/conda/envs/container
+
+%files
+    ./requirements.txt /
+
+%post -c /bin/bash
+    echo "=========== Init envrionment"
+    source /opt/conda/etc/profile.d/conda.sh
+
+    echo "=========== Install from requirements.txt"
+    /opt/conda/bin/conda create -p /opt/conda/envs/container -y --file /requirements.txt
+
+    echo "=========== conda list"
+    conda list -p /opt/conda/envs/container
+
+    echo "=========== conda activate"
+    conda activate /opt/conda/envs/container
+
+%runscript
+    # Activate conda environment when running the container
+    . /opt/conda/etc/profile.d/conda.sh
+    conda activate /opt/conda/envs/container
+    exec "$@"
+
+%test
+    echo "======================================="
+    echo "Running container tests"
+    echo "======================================="
+
+    # Test: Conda environment activation
+    echo "Checking if /opt/conda/envs/container is an active Conda environment..."
+    if ! conda info --envs | grep -q '/opt/conda/envs/container'; then
+        echo "Error: /opt/conda/envs/container is not an active Conda environment" >&2
+        exit 1
+    fi
+    echo "/opt/conda/envs/container is an active Conda environment."
+
+    # Test: System kernel information
+    expected_uname_output="Linux skyriver 5.14.0-427.24.1.el9_4.x86_64 #1 SMP PREEMPT_DYNAMIC Sun Jun 23 11:48:35 EDT 2024 x86_64 x86_64 x86_64 GNU/Linux"
+    actual_uname_output=$(uname -a)
+    if [[ "$actual_uname_output" != "$expected_uname_output" ]]; then
+        echo "Error: Expected uname output differs from the actual output" >&2
+        echo "Expected: $expected_uname_output" >&2
+        echo "Actual: $actual_uname_output" >&2
+        exit 1
+    fi
+    echo "System kernel information is correct."
+
+    echo "======================================="
+    echo "All tests passed!"
+    echo "======================================="
+
