@@ -31,11 +31,11 @@ for i, F in enumerate(F_lst):
     #######################
     print('... Loading {0} data for {1} hour lead'.format(model_name, F)
     if model_name == 'ECMWF':
-        s = load_ECMWF_datasets(F=F, fdate='2024073000')
+        s = load_ECMWF_datasets(F=F, fdate=None) #fdate='2024073000'
         model_data= s.calc_vars()
 
     elif model_name == 'GFS':
-        s = load_GFS_datasets(F=F, fdate='2024072212')
+        s = load_GFS_datasets(F=F, fdate=None) #fdate='2024072212'
         model_data= s.calc_vars()
         
     ## SECOND LOOP - LOOP THROUGH LONGITUDE FOR CROSS SECTION ##
