@@ -17,8 +17,6 @@ import pandas as pd
 import datetime
 import cartopy.crs as ccrs
 
-sys.path.append('../file-reader-toolkit') # point this to where you have the CW3E cmaps_toolkit repo located
-import calculations
 import calc_funcs as cfuncs
 
 def read_gfs_deterministic(filename, vardict, show_catalog=False):
@@ -261,10 +259,10 @@ class load_GFS_datasets:
         pressure_3d = np.tile(gfs["rh"].isobaricInhPa.values[:, np.newaxis, np.newaxis], (1, gfs["rh"].values.shape[1], gfs["rh"].values.shape[2]))
 
         # calculating specific humidity from relative humidity for gfs
-        gfs_q = calculations.specific_humidity(temperature=gfs["temperature"].values, pressure=pressure_3d*100, relative_humidity=gfs["rh"].values/100)
+        gfs_q = cfuncs.specific_humidity(temperature=gfs["temperature"].values, pressure=pressure_3d*100, relative_humidity=gfs["rh"].values/100)
 
         #calculating ivt 
-        gfs_uivt, gfs_vivt, gfs_ivt = calculations.ivt(u_wind=gfs["u_wind"].values,v_wind=gfs["v_wind"].values,specific_humidity=gfs_q, pressure=pressure_3d*100, sfc_pressure=gfs["sfc_pressure"].values)
+        gfs_uivt, gfs_vivt, gfs_ivt = cfuncs.ivt(u_wind=gfs["u_wind"].values,v_wind=gfs["v_wind"].values,specific_humidity=gfs_q, pressure=pressure_3d*100, sfc_pressure=gfs["sfc_pressure"].values)
 
         ## calculating wvflux
         # wv_flux = np.sqrt((gfs["u_wind"].values*gfs_q)**2 + (gfs["v_wind"].values*gfs_q)**2)
@@ -368,7 +366,7 @@ class load_ECMWF_datasets:
         ecmwf_s1d = read_ecmwf_S1D(filename=self.ecmwf_s1d_filename,vardict=ecmwf_s1d_vardict, show_catalog=False)
 
         ### calculating ivt
-        ecmwf_uivt, ecmwf_vivt, ecmwf_ivt = calculations.ivt(u_wind=ecmwf_s2d["u_wind"].values,v_wind=ecmwf_s2d["v_wind"].values,specific_humidity=ecmwf_s2d["specific_humidity"], pressure=ecmwf_s2d["pressure"]*100)
+        ecmwf_uivt, ecmwf_vivt, ecmwf_ivt = cfuncs.ivt(u_wind=ecmwf_s2d["u_wind"].values,v_wind=ecmwf_s2d["v_wind"].values,specific_humidity=ecmwf_s2d["specific_humidity"], pressure=ecmwf_s2d["pressure"]*100)
 
         ## calculating wvflux
         rh = cfuncs.calc_relative_humidity_from_specific_humidity(ecmwf_s2d["pressure"].values, ecmwf_s2d["temperature"], ecmwf_s2d["specific_humidity"])
