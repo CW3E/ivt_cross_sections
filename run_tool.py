@@ -8,7 +8,7 @@ import sys
 import numpy as np
 
 from read_deterministic_data import load_GFS_datasets, load_ECMWF_datasets
-from plot_cross_section import plot_ivt_cross_sections
+from plotter import plot_ivt_cross_sections
 
 model_name = sys.argv[1]
 print('Creating ivt cross sections for {0}'.format(model_name))
