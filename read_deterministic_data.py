@@ -333,7 +333,7 @@ class load_ECMWF_datasets:
 
 
         init_time = datetime.datetime.strptime(date_string,'%Y%m%d%H%M')
-        lead_time = datetime.timedelta(hours=F)
+        lead_time = datetime.timedelta(hours=str(F))
 
         ecmwf_s2d_filename = "/S2D{init:%m%d%H%M}{valid:%m%d%H%M}1.grb".format(init=init_time, valid=init_time+lead_time)
         ecmwf_s1d_filename = "/S1D{init:%m%d%H%M}{valid:%m%d%H%M}1".format(init=init_time, valid=init_time+lead_time)
