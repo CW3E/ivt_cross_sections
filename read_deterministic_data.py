@@ -232,9 +232,9 @@ class load_GFS_datasets:
         fname = '/gfs_{0}_f{1}.grb'.format(self.date_string, str(self.F).zfill(3))
 
         ## for now: copy the files to local space
-        repo_path = '/home/dnash/comet_data/tmp'
+        # repo_path = '/home/dnash/comet_data/tmp'
         # shutil.copy(self.fpath+fname, repo_path+fname) # copy file over to data folder     
-        self.fname = repo_path+fname
+        self.fname = path_to_data+fname
 
         self.model_init_date = datetime.datetime.strptime(self.date_string, '%Y%m%d%H')
 
@@ -341,12 +341,12 @@ class load_ECMWF_datasets:
         ecmwf_s1d_filename = "/S1D{init:%m%d%H%M}{valid:%m%d%H%M}1".format(init=init_time, valid=init_time+lead_time)
 
          ## for now: copy the files to local space
-        repo_path = '/home/dnash/comet_data/tmp'
+        # repo_path = '/home/dnash/comet_data/tmp'
         # shutil.copy(fpath+ecmwf_s2d_filename, repo_path+ecmwf_s2d_filename) # copy file over to data folder
         # shutil.copy(fpath+ecmwf_s1d_filename, repo_path+ecmwf_s1d_filename) # copy file over to data folder 
 
-        self.ecmwf_s2d_filename = repo_path+"/S2D{init:%m%d%H%M}{valid:%m%d%H%M}1.grb".format(init=init_time, valid=init_time+lead_time)
-        self.ecmwf_s1d_filename = repo_path+"/S1D{init:%m%d%H%M}{valid:%m%d%H%M}1".format(init=init_time, valid=init_time+lead_time)
+        self.ecmwf_s2d_filename = fpath+"/S2D{init:%m%d%H%M}{valid:%m%d%H%M}1.grb".format(init=init_time, valid=init_time+lead_time)
+        self.ecmwf_s1d_filename = fpath+"/S1D{init:%m%d%H%M}{valid:%m%d%H%M}1".format(init=init_time, valid=init_time+lead_time)
 
     def calc_vars(self):
         ecmwf_s2d_vardict = {
