@@ -332,7 +332,7 @@ class load_ECMWF_datasets:
             print(date_string)
 
 
-        init_time = datetime.datetime.strptime(date_string,'%Y%m%d%H%M')
+        init_time = datetime.datetime.strptime(date_string,'%Y%m%d%H')
         lead_time = datetime.timedelta(hours=int(F))
         print(init_time)
         print(lead_time)
