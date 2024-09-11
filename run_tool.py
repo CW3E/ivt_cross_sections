@@ -29,7 +29,7 @@ for i, F in enumerate(F_lst):
     #######################
     ### LOAD MODEL DATA ###
     #######################
-    print('... Loading {0} data for {1} hour lead'.format(model_name, F)
+    print('... Loading {0} data for {1} hour lead'.format(model_name, F))
     if model_name == 'ECMWF':
         s = load_ECMWF_datasets(F=F, fdate=None) #fdate='2024073000'
         model_data= s.calc_vars()
@@ -50,7 +50,7 @@ for i, F in enumerate(F_lst):
         cross = cross.sortby('latitude')
         
         ### Create Plots
-        print('...... Creating figure for {0}'.format(current_line[1])
+        print('...... Creating figure for {0}'.format(current_line[1]))
         plot_ivt_cross_sections(model_data, cross, line_lst, current_line, model_name, F)
         
         
