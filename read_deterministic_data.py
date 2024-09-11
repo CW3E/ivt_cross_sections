@@ -231,8 +231,8 @@ class load_GFS_datasets:
 
         ## for now: copy the files to local space
         # repo_path = '/home/dnash/comet_data/tmp'
-        # shutil.copy(self.fpath+fname, repo_path+fname) # copy file over to data folder     
-        self.fname = path_to_data+fname
+        # shutil.copy(self.fpath+fname, repo_path+fname) # copy file over to data folder
+        self.fname = self.fpath+fname
 
         self.model_init_date = datetime.datetime.strptime(self.date_string, '%Y%m%d%H')
 
