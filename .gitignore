@@ -37,7 +37,7 @@
 rsl*
 *.txt
 core.*
-
+.ncdu_output/*
 # OS generated files #
 ######################
 .DS_Store
