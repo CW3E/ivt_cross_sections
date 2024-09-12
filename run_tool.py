@@ -9,6 +9,7 @@ import numpy as np
 
 from read_deterministic_data import load_GFS_datasets, load_ECMWF_datasets
 from plotter import plot_ivt_cross_sections
+from calc_funcs import format_timedelta_to_HHMMSS
 
 model_name = sys.argv[1]
 print('Creating ivt cross sections for {0}'.format(model_name))
@@ -25,7 +26,7 @@ for i, lon in enumerate(lon_lst):
     line_lst.append(line)
 
 for i, F in enumerate(F_lst):
-
+    start_time = pd.Timestamp.today()
     #######################
     ### LOAD MODEL DATA ###
     #######################
@@ -52,6 +53,11 @@ for i, F in enumerate(F_lst):
         ### Create Plots
         print('...... Creating figure for {0}'.format(current_line[1]))
         plot_ivt_cross_sections(model_data, cross, line_lst, current_line, model_name, F)
+        
+    end_time = pd.Timestamp.today()
+    td = start_time - end_time
+    td = format_timedelta_to_HHMMSS(td)
+    print('Plots for {0} lead took {1} to run'.format(F, td))
         
         
     
