@@ -6,6 +6,7 @@ Description: For GEFS, and ECMWF: output .png files of ivt cross section plot fo
 import os
 import sys
 import numpy as np
+import pandas as pd
 
 from read_deterministic_data import load_GFS_datasets, load_ECMWF_datasets
 from plotter import plot_ivt_cross_sections
