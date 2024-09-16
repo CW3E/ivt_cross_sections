@@ -38,7 +38,7 @@ for i, F in enumerate(F_lst):
         model_data= s.calc_vars()
 
     elif model_name == 'GFS':
-        s = load_GFS_datasets(F=F, fdate='2024090312')
+        s = load_GFS_datasets(F=F, fdate=None)
         model_data= s.calc_vars()
         
     model_data
