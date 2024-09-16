@@ -8,6 +8,8 @@ Description: Functions for plotting IVT cross sections
 import os, sys
 import numpy as np
 import xarray as xr
+import matplotlib as mpl
+mpl.use('agg') ## for speedup
 import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
@@ -30,8 +32,6 @@ from scipy.ndimage import gaussian_filter
 import copy
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
-import matplotlib as mpl
-mpl.use('agg')
 
 import cw3ecmaps as ccmaps
 import domains as domains
@@ -364,7 +364,8 @@ def plot_ivt_cross_sections(ds, cross, line_lst, current_line, model_name, F):
                  linewidth=0.25, length=3.5)
 
     ## apply xtick parameters (latitude labels)
-    ax.xaxis.set_major_locator(mticker.FixedLocator(np.arange(xs[0], xs[-1]+1, 5)))
+    xticks = np.arange(25, 70, 5)
+    ax.xaxis.set_major_locator(mticker.FixedLocator(xticks))
     ax.xaxis.set_major_formatter(LATITUDE_FORMATTER)
     ax.minorticks_on()
     ax.tick_params(axis='x', which='minor', bottom=True)
@@ -429,7 +430,8 @@ def plot_ivt_cross_sections(ds, cross, line_lst, current_line, model_name, F):
     ax2.set_ylim(yticks[0], yticks[-1])
 
     ## apply xtick parameters (latitude labels)
-    ax.xaxis.set_major_locator(mticker.FixedLocator(np.arange(xs[0], xs[-1]+1, 5)))
+    xticks = np.arange(25, 70, 5)
+    ax.xaxis.set_major_locator(mticker.FixedLocator(xticks))
     ax.xaxis.set_major_formatter(LATITUDE_FORMATTER)
     ax.minorticks_on()
     ax.tick_params(axis='x', which='minor', bottom=True)
@@ -452,4 +454,6 @@ def plot_ivt_cross_sections(ds, cross, line_lst, current_line, model_name, F):
                     **style)
 
     fig.savefig('%s.%s' %(fname, fmt), bbox_inches='tight', dpi=fig.dpi, transparent=False)
-    fig.clf()
+    # fig.clf()
+    # close figure
+    plt.close(plt.gcf())

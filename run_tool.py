@@ -24,7 +24,8 @@ for i, lon in enumerate(lon_lst):
     ## create list of lines where [start_lat, start_lon, end_lat, end_lon]
     line = [25., lon, 65., lon]
     line_lst.append(line)
-
+    
+    
 for i, F in enumerate(F_lst):
     start_time = pd.Timestamp.today()
     #######################
@@ -32,12 +33,32 @@ for i, F in enumerate(F_lst):
     #######################
     print('... Loading {0} data for {1} hour lead'.format(model_name, F))
     if model_name == 'ECMWF':
-        s = load_ECMWF_datasets(F=F, fdate=None) #fdate='2024073000'
+        s = load_ECMWF_datasets(F=F, fdate=None)
         model_data= s.calc_vars()
 
     elif model_name == 'GFS':
-        s = load_GFS_datasets(F=F, fdate=None) #fdate='2024072212'
+        s = load_GFS_datasets(F=F, fdate='2024090312')
         model_data= s.calc_vars()
+        
+    model_data
+    ## write intermediate data files
+    out_fname = '/data/projects/operations/ivt_cross_sections/data/tmp_{0}_{1}.nc'.format(model_name, F)
+    model_data.to_netcdf(path=out_fname, mode = 'w', format='NETCDF4')
+    end_time = pd.Timestamp.today()
+    td = end_time - start_time
+    td = format_timedelta_to_HHMMSS(td)
+    print('Data for {0} lead took {1} to preprocess'.format(F, td))
+    model_data.close() ## close data
+    
+    
+for i, F in enumerate(F_lst):
+    start_time = pd.Timestamp.today()
+    #######################
+    ### LOAD MODEL DATA ###
+    #######################
+    print('... Loading intermediate {0} data for {1} hour lead'.format(model_name, F))
+    out_fname = '/data/projects/operations/ivt_cross_sections/data/tmp_{0}_{1}.nc'.format(model_name, F)
+    model_data = xr.open_dataset(out_fname, engine='netcdf4')
         
     ## SECOND LOOP - LOOP THROUGH LONGITUDE FOR CROSS SECTION ##
     for k, current_line in enumerate(line_lst):
@@ -55,9 +76,10 @@ for i, F in enumerate(F_lst):
         plot_ivt_cross_sections(model_data, cross, line_lst, current_line, model_name, F)
         
     end_time = pd.Timestamp.today()
-    td = start_time - end_time
+    td = end_time - start_time
     td = format_timedelta_to_HHMMSS(td)
     print('Plots for {0} lead took {1} to run'.format(F, td))
+    model_data.close() ## close data
         
         
     

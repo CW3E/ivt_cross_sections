@@ -230,7 +230,7 @@ class load_GFS_datasets:
         fname = '/gfs_{0}_f{1}.grb'.format(self.date_string, str(self.F).zfill(3))
 
         ## for now: copy the files to local space
-        # repo_path = '/home/dnash/comet_data/tmp'
+        self.fpath = '/home/dnash/comet_data/tmp'
         # shutil.copy(self.fpath+fname, repo_path+fname) # copy file over to data folder
         self.fname = self.fpath+fname
 
@@ -291,7 +291,7 @@ class load_GFS_datasets:
                                             'u':u_wind_da,
                                             'v':v_wind_da,
                                             'wvflux':wvflux_da}, 
-                                attrs={"model":"GFS", "init":gfs["sfc_pressure"].time.values, "valid_time":gfs["sfc_pressure"].valid_time.values, "datacrs":ccrs.PlateCarree(central_longitude=0)}
+                                attrs={"model":"GFS", "init":str(gfs["sfc_pressure"].time.values), "valid_time":str(gfs["sfc_pressure"].valid_time.values)}
                                 ) 
 
 
