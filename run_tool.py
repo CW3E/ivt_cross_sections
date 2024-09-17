@@ -7,6 +7,7 @@ import os
 import sys
 import numpy as np
 import pandas as pd
+import xarray as xr
 
 from read_deterministic_data import load_GFS_datasets, load_ECMWF_datasets
 from plotter import plot_ivt_cross_sections
