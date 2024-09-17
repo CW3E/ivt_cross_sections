@@ -340,7 +340,7 @@ class load_ECMWF_datasets:
         ecmwf_s2d_filename = "/S2D{init:%m%d%H%M}{valid:%m%d%H%M}1.grb".format(init=init_time, valid=init_time+lead_time)
         ecmwf_s1d_filename = "/S1D{init:%m%d%H%M}{valid:%m%d%H%M}1".format(init=init_time, valid=init_time+lead_time)
 
-         ## for now: copy the files to local space
+        #  ## for now: copy the files to local space
         # repo_path = '/home/dnash/comet_data/tmp'
         # shutil.copy(fpath+ecmwf_s2d_filename, repo_path+ecmwf_s2d_filename) # copy file over to data folder
         # shutil.copy(fpath+ecmwf_s1d_filename, repo_path+ecmwf_s1d_filename) # copy file over to data folder 
