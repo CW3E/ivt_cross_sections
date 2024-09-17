@@ -227,10 +227,10 @@ class load_GFS_datasets:
             self.date_string = regex.findall(self.fpath)[-1]
         elif fdate is not None:
             self.date_string = fdate
+            self.fpath = '/home/dnash/comet_data/tmp'
         fname = '/gfs_{0}_f{1}.grb'.format(self.date_string, str(self.F).zfill(3))
 
         ## for now: copy the files to local space
-        # self.fpath = '/home/dnash/comet_data/tmp'
         # shutil.copy(self.fpath+fname, repo_path+fname) # copy file over to data folder
         self.fname = self.fpath+fname
 

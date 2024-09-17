@@ -8,6 +8,7 @@ import sys
 import numpy as np
 import pandas as pd
 import xarray as xr
+import multiprocessing
 
 from read_deterministic_data import load_GFS_datasets, load_ECMWF_datasets
 from plotter import plot_ivt_cross_sections
@@ -53,7 +54,7 @@ for i, F in enumerate(F_lst):
     model_data.close() ## close data
     
     
-def multiP():
+def multiP(model_data, line_lst, F):
     ## SECOND LOOP - LOOP THROUGH LONGITUDE FOR CROSS SECTION ##
     for k, current_line in enumerate(line_lst):
         ## subset vertical data and IVT data to current line
@@ -66,18 +67,11 @@ def multiP():
         cross = cross.sortby('latitude')
         
         ### Create Plots
-        print('...... Creating figure for {0}'.format(current_line[1]))
-        plot_ivt_cross_sections(model_data, cross, line_lst, current_line, model_name, F)
-        
-    for i in range(2):
-        p = multiprocessing.Process(target=plot, args=(i, i, i))
+        p = multiprocessing.Process(target=plot_ivt_cross_sections, args=(model_data, cross, line_lst, current_line, model_name, F))
         p.start()
 
-if __name__ == "__main__": 
-    input('Value: ') 
-    multiP()
-    
-    
+
+        
 for i, F in enumerate(F_lst):
     start_time = pd.Timestamp.today()
     #######################
@@ -87,6 +81,8 @@ for i, F in enumerate(F_lst):
     out_fname = '/data/projects/operations/ivt_cross_sections/data/tmp_{0}_{1}.nc'.format(model_name, F)
     model_data = xr.open_dataset(out_fname, engine='netcdf4')
         
+    if __name__ == "__main__": 
+        multiP(model_data, line_lst, F)
     
         
     end_time = pd.Timestamp.today()
