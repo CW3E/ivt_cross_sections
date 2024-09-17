@@ -16,6 +16,7 @@ from calc_funcs import format_timedelta_to_HHMMSS
 
 model_name = sys.argv[1]
 print('Creating ivt cross sections for {0}'.format(model_name))
+start_time = pd.Timestamp.today()
 
 ## FIRST LOOP - LEAD TIME ##
 F_lst = np.arange(0, 132, 12)
@@ -30,7 +31,6 @@ for i, lon in enumerate(lon_lst):
     
     
 for i, F in enumerate(F_lst):
-    start_time = pd.Timestamp.today()
     #######################
     ### LOAD MODEL DATA ###
     #######################
@@ -47,10 +47,6 @@ for i, F in enumerate(F_lst):
     ## write intermediate data files
     out_fname = '/data/projects/operations/ivt_cross_sections/data/tmp_{0}_{1}.nc'.format(model_name, F)
     model_data.to_netcdf(path=out_fname, mode = 'w', format='NETCDF4')
-    end_time = pd.Timestamp.today()
-    td = end_time - start_time
-    td = format_timedelta_to_HHMMSS(td)
-    print('Data for {0} lead took {1} to preprocess'.format(F, td))
     model_data.close() ## close data
     
     
@@ -73,7 +69,6 @@ def multiP(model_data, line_lst, F):
 
         
 for i, F in enumerate(F_lst):
-    start_time = pd.Timestamp.today()
     #######################
     ### LOAD MODEL DATA ###
     #######################
@@ -84,12 +79,12 @@ for i, F in enumerate(F_lst):
     if __name__ == "__main__": 
         multiP(model_data, line_lst, F)
     
-        
-    end_time = pd.Timestamp.today()
-    td = end_time - start_time
-    td = format_timedelta_to_HHMMSS(td)
-    print('Plots for {0} lead took {1} to run'.format(F, td))
     model_data.close() ## close data
+    
+end_time = pd.Timestamp.today()
+td = end_time - start_time
+td = format_timedelta_to_HHMMSS(td)
+print('Plots for {0} took {1} to run'.format(model_name, td))
         
         
     
