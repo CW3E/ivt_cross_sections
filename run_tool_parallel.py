@@ -19,7 +19,7 @@ print('Creating ivt cross sections for {0}'.format(model_name))
 start_time = pd.Timestamp.today()
 
 ## FIRST LOOP - LEAD TIME ##
-F_lst = np.arange(0, 132, 12)
+F_lst = np.arange(12, 132, 12)
 
 ## create list that has the start and end points for the cross section
 lon_lst = np.arange(185., 260., 5.)
