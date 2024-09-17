@@ -405,9 +405,8 @@ class load_ECMWF_datasets:
         model_data = xr.Dataset(var_dict,
                                 coords={'latitude': (['latitude'], ecmwf_s1d["sfc_pressure"].latitude.values),
                                         'longitude': (['longitude'], ecmwf_s1d["sfc_pressure"].longitude.values)},
-                               attrs={"model":"ECMWF", "init":ecmwf_s1d["sfc_pressure"].time.values, 
-                                      "valid_time":ecmwf_s1d["sfc_pressure"].valid_time.values, 
-                                      "datacrs":ccrs.PlateCarree(central_longitude=0)})
+                               attrs={"model":"ECMWF", "init":str(ecmwf_s1d["sfc_pressure"].time.values), 
+                                      "valid_time":str(ecmwf_s1d["sfc_pressure"].valid_time.values)})
 
         ## merge vertical level data and single level data
         model_data = xr.merge([model_data, ds1])
