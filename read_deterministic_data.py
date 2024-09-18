@@ -316,7 +316,7 @@ class load_ECMWF_datasets:
     
     '''
     def __init__(self, F, fdate=None):
-        
+        self.F = F
         if fdate is not None:
             date_string = fdate
             fpath = '/data/downloaded/Forecasts/ECMWF/NRT_data/{0}'.format(fdate)
@@ -347,6 +347,8 @@ class load_ECMWF_datasets:
 
         self.ecmwf_s2d_filename = fpath+"/S2D{init:%m%d%H%M}{valid:%m%d%H%M}1.grb".format(init=init_time, valid=init_time+lead_time)
         self.ecmwf_s1d_filename = fpath+"/S1D{init:%m%d%H%M}{valid:%m%d%H%M}1".format(init=init_time, valid=init_time+lead_time)
+        ## need a special filename for freezing level at F=0
+        self.ecmwf_s1d_special_filename = fpath+"/S1D{init:%m%d%H%M}{valid:%m%d}03001".format(init=init_time, valid=init_time+lead_time)
 
     def calc_vars(self):
         ecmwf_s2d_vardict = {
@@ -361,11 +363,31 @@ class load_ECMWF_datasets:
                         "iwv":{"shortName":'tcw'},
                         "freezing_level": {'shortName': 'deg0l'}
                         }
+        
+        ecmwf_F00_vardict = {
+                        "sfc_pressure":{"shortName":'sp'},
+                        "iwv":{"shortName":'tcw'}
+                        }
 
         ##reading ecmwf s1d and s2d files
         ##ecmwf is a dictionary of datasets
         ecmwf_s2d = read_ecmwf_S2D(filename=self.ecmwf_s2d_filename,vardict=ecmwf_s2d_vardict, show_catalog=False)
-        ecmwf_s1d = read_ecmwf_S1D(filename=self.ecmwf_s1d_filename,vardict=ecmwf_s1d_vardict, show_catalog=False)
+        
+        if self.F == 0:
+            ecmwf_s1d = read_ecmwf_S1D(filename=self.ecmwf_s1d_filename,
+                                       vardict=ecmwf_F00_vardict, 
+                                       show_catalog=False)
+            ## have to read freezing level from 03 lead
+            ecmwf_deg0l = read_ecmwf_S1D(filename=self.ecmwf_s1d_special_filename,
+                                         vardict={"freezing_level": {'shortName': 'deg0l'}},
+                                         show_catalog=False)
+            ## get freezing level on pressure levels
+            freezing_level = cfuncs.calculate_zero_degree_isotherm(ecmwf_deg0l["freezing_level"])
+            
+        else:
+            ecmwf_s1d = read_ecmwf_S1D(filename=self.ecmwf_s1d_filename,vardict=ecmwf_s1d_vardict, show_catalog=False)
+            ## get freezing level on pressure levels
+            freezing_level = cfuncs.calculate_zero_degree_isotherm(ecmwf_s1d["freezing_level"])
 
         ### calculating ivt
         ecmwf_uivt, ecmwf_vivt, ecmwf_ivt = cfuncs.ivt(u_wind=ecmwf_s2d["u_wind"].values,v_wind=ecmwf_s2d["v_wind"].values,specific_humidity=ecmwf_s2d["specific_humidity"], pressure=ecmwf_s2d["pressure"]*100)
@@ -392,9 +414,6 @@ class load_ECMWF_datasets:
         ## putting u, v, and pressure and 3D lat into a dataset
         ds_lst = [ecmwf_s2d["v_wind"], ecmwf_s2d["u_wind"], wv_flux, ecmwf_s2d["pressure"], a2]
         ds1 = xr.merge(ds_lst)
-
-        ## get freezing level on pressure levels
-        freezing_level = cfuncs.calculate_zero_degree_isotherm( ecmwf_s1d["freezing_level"])
 
         ## build final dataset
         var_dict = {'ivt': (['latitude', 'longitude'], ecmwf_ivt),
