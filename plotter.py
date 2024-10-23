@@ -244,7 +244,8 @@ def plot_ivt_cross_sections(ds, cross, line_lst, current_line, model_name, F):
     wvflux_units = 'kg m$^{-2}$ s$^{-1}$'
     ivt_units = 'kg m$^{-1}$ s$^{-1}$'
     wind_units = '(knots)'
-    title = '{0} IVT ({4}), WV Flux ({1}) and Wind {2} | {3}'.format(model_name, wvflux_units, wind_units, lon_lbl, ivt_units)
+    title = '{0} WV Flux ({1}) and Wind {2} | {3}'.format(model_name, wvflux_units, wind_units, lon_lbl, ivt_units)
+    title2 = '{0} IVT ({4})'.format(model_name, wvflux_units, wind_units, lon_lbl, ivt_units)
 
     init_date = pd.to_datetime(ds.attrs["init"]).strftime('%H UTC %d %b %Y')
     valid_date = pd.to_datetime(ds.attrs["valid_time"]).strftime('%H UTC %d %b %Y')
@@ -262,19 +263,19 @@ def plot_ivt_cross_sections(ds, cross, line_lst, current_line, model_name, F):
 
     current_dpi=600 #recommended dpi of 600
     base_dpi=100
-    scaling_factor = (current_dpi / base_dpi)**0.13
+    scaling_factor = (current_dpi / base_dpi)**0.1
 
     set_cw3e_font(current_dpi, scaling_factor)
 
     nrows = 3
-    ncols = 4
+    ncols = 5
 
     ## Use gridspec to set up a plot with a series of subplots that is
     ## n-rows by n-columns
-    gs = GridSpec(nrows, ncols, height_ratios=[1.5, 1, 0.05], width_ratios = [1.5, 0.1, 1, 0.05], wspace=0.06, hspace=0.3)
+    gs = GridSpec(nrows, ncols, height_ratios=[1.5, 0.5, 1.], width_ratios = [0.75, 0.05, 0.15, 1, 0.05], wspace=0.06, hspace=0.3)
     ## use gs[rows index, columns index] to access grids
 
-    fig = plt.figure(figsize=(13.0, 5))
+    fig = plt.figure(figsize=(14., 5))
     fig.dpi = current_dpi
     fname = 'figs/{0}/Cross_Section_latest_25-65N_{1}_F{2}'.format(model_name, flon_lbl, str(F).zfill(3))
     fmt = 'png'
@@ -306,19 +307,19 @@ def plot_ivt_cross_sections(ds, cross, line_lst, current_line, model_name, F):
     ## red line where current cross section is showing
     ax.plot([current_line[1], current_line[3]], [current_line[0], current_line[2]], color='r', transform=datacrs, zorder=3)
 
-    ax.set_title(title + "\n" + left_title, loc="left")
+    ax.set_title(title2, loc="left")
 
     ## color bar
-    cbax = fig.add_subplot(gs[-1, 0]) # colorbar axis (first row, last column)
+    cbax = fig.add_subplot(gs[0:2, 1]) # colorbar axis (first row, last column)
     cbarticks = list(itertools.compress(bnds, cbarticks)) ## this labels the cbarticks based on the cmap dictionary
-    cb = Colorbar(ax = cbax, mappable = cf, orientation = 'horizontal', ticklocation = 'bottom', ticks=cbarticks)
-    cb.set_label(cbarlbl)
-    cb.ax.tick_params(labelsize=12)
+    cb = Colorbar(ax = cbax, mappable = cf, orientation = 'vertical', ticklocation = 'right', ticks=cbarticks)
+    # cb.set_label(cbarlbl)
+    # cb.ax.tick_params(labelsize=12)
 
     #####################
     ### CROSS SECTION ###
     #####################
-    ax = fig.add_subplot(gs[0, 2])
+    ax = fig.add_subplot(gs[0:2, 3])
 
     ## y-axis is pressure
     ## x-axis is latitude
@@ -357,11 +358,11 @@ def plot_ivt_cross_sections(ds, cross, line_lst, current_line, model_name, F):
         dw = 8 # how often to plot vector vertically
         dw2 = 15 # how often to plot horizontally
         ax.barbs(x[::dw, ::dw2], ys[::dw, ::dw2], cross.u.values[::dw, ::dw2]*1.94384, cross.v.values[::dw, ::dw2]*1.94384, 
-                 linewidth=0.25, length=3.5)
+                 linewidth=0.5, length=4.5)
     elif model_name == 'GFS':
         dw = 5 # how often to plot vector
         ax.barbs(xs[::dw], ys[::dw], cross.u.values[::dw, ::dw]*1.944, cross.v.values[::dw, ::dw]*1.944, 
-                 linewidth=0.25, length=3.5)
+                 linewidth=0.5, length=4.5)
 
     ## apply xtick parameters (latitude labels)
     xticks = np.arange(25, 70, 5)
@@ -373,11 +374,12 @@ def plot_ivt_cross_sections(ds, cross, line_lst, current_line, model_name, F):
 
     ## add titles
     ax.set_title(right_title, loc="right")
+    ax.set_title(title + "\n" + left_title, loc="left")
 
     # # Add color bar
-    cbax = fig.add_subplot(gs[0, -1]) # colorbar axis
+    cbax = fig.add_subplot(gs[0:2, -1]) # colorbar axis
     cb = Colorbar(ax = cbax, mappable = cf, orientation = 'vertical', ticklocation = 'right', ticks=cbarticks)
-    cb.ax.tick_params(labelsize=12)
+    # cb.ax.tick_params(labelsize=12)
     cb.ax.set_yticklabels(['{:g}'.format(x) for x in cbarticks]) # force cbartick labels to drop trailing zeros
 
     ## Add CW3E logo
@@ -387,7 +389,7 @@ def plot_ivt_cross_sections(ds, cross, line_lst, current_line, model_name, F):
     ###################
     ### TIME SERIES ###
     ###################
-    ax = fig.add_subplot(gs[1:, 2])
+    ax = fig.add_subplot(gs[2, 3])
 
     ax.plot(xs, cross.iwv.values, color='blue', linewidth=0.75)
     ax.set_ylabel('IWV (mm)', color='blue')
@@ -395,9 +397,9 @@ def plot_ivt_cross_sections(ds, cross, line_lst, current_line, model_name, F):
     ax.set_xlim(xs[0], xs[-1])
 
     ## add IWV label to line
-    ax.annotate('IWV', xy=(xs[20],cross.iwv[20]), xycoords='data',
+    ax.annotate('IWV', xy=(xs[10],cross.iwv[20]), xycoords='data',
                 textcoords="offset points", # how to position the text
-                xytext=(0,-0.5), # distance from text to points (x,y)
+                xytext=(0,-2), # distance from text to points (x,y)
                 bbox=dict(boxstyle="square,pad=0.1", fc="white", ec=None, lw=0.0),
                 **style)
 
@@ -410,7 +412,7 @@ def plot_ivt_cross_sections(ds, cross, line_lst, current_line, model_name, F):
 
     ax2 = ax.twinx()  # instantiate a second axes that shares the same x-axis
     ax2.plot(xs, cross.ivt.values, color='red')
-    ax2.set_ylabel('IVT (kg m$^{-1}$ s$^{-1}$)', color='red')
+    ax2.set_ylabel('IVT (kg m$^{-1}$ s$^{-1}$)', color='red', rotation=270, labelpad=15)
     ax2.axhline(y=250.0, color='red', linestyle='--')
     ax2.set_xlim(xs[0], xs[-1])
 
@@ -422,8 +424,8 @@ def plot_ivt_cross_sections(ds, cross, line_lst, current_line, model_name, F):
                 **style)
 
     ## set adaptive nice yticks
-    ivt_max = roundPartial(cross.ivt.max().values+100, 250)
-    yticks = np.arange(0, ivt_max+100, 250)
+    ivt_max = roundPartial(cross.ivt.max().values+250, 250)
+    yticks = np.arange(0, ivt_max+250, 250)
     ax2.yaxis.set_major_locator(mticker.FixedLocator(yticks))
     ax2.minorticks_on()
     ax2.tick_params(axis='y', which='minor', right=True)
@@ -444,8 +446,13 @@ def plot_ivt_cross_sections(ds, cross, line_lst, current_line, model_name, F):
     ## add in annotation of max IWV and IVT vals
     IWV_ann = 'Max IWV: {0:0.0f} mm'.format(cross.iwv.max().values)
     IVT_ann = 'Max IVT: {0:0.0f} {1}'.format(cross.ivt.max().values, ivt_units)
+    
+    if cross.ivt.max().values > 1000:
+        xy1 = .77
+    elif cross.ivt.max().values < 1000:
+        xy1 = .78
 
-    xy = [(.01, .93), (.68, .93)]
+    xy = [(.01, .91), (xy1, .91)]
     for i, lbl in enumerate([IWV_ann, IVT_ann]):
         ax.annotate(lbl, # this is the text
                     xy[i], # these are the coordinates to position the label
