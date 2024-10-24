@@ -267,15 +267,15 @@ def plot_ivt_cross_sections(ds, cross, line_lst, current_line, model_name, F):
 
     set_cw3e_font(current_dpi, scaling_factor)
 
-    nrows = 3
+    nrows = 4
     ncols = 5
 
     ## Use gridspec to set up a plot with a series of subplots that is
     ## n-rows by n-columns
-    gs = GridSpec(nrows, ncols, height_ratios=[1.5, 0.5, 1.], width_ratios = [0.75, 0.05, 0.15, 1, 0.05], wspace=0.06, hspace=0.3)
+    gs = GridSpec(nrows, ncols, height_ratios=[0.5, 1.5, 0.5, 0.5], width_ratios = [0.75, 0.05, 0.15, 1, 0.05], wspace=0.06, hspace=0.3)
     ## use gs[rows index, columns index] to access grids
 
-    fig = plt.figure(figsize=(14., 5))
+    fig = plt.figure(figsize=(14., 5.25))
     fig.dpi = current_dpi
     fname = 'figs/{0}/Cross_Section_latest_25-65N_{1}_F{2}'.format(model_name, flon_lbl, str(F).zfill(3))
     fmt = 'png'
@@ -284,7 +284,7 @@ def plot_ivt_cross_sections(ds, cross, line_lst, current_line, model_name, F):
     ### PLOT IVT MAP ###
     ####################
 
-    ax = fig.add_subplot(gs[0:2, 0], projection=mapcrs)
+    ax = fig.add_subplot(gs[1:3, 0], projection=mapcrs)
     ax = draw_basemap(ax, extent=ext, xticks=dx, yticks=dy, left_lats=True, right_lats=False, grid=True)
     ax.set_extent(ext, datacrs)
     ax.add_feature(cfeature.STATES, edgecolor='0.4', linewidth=0.8)
@@ -310,7 +310,7 @@ def plot_ivt_cross_sections(ds, cross, line_lst, current_line, model_name, F):
     ax.set_title(title2, loc="left")
 
     ## color bar
-    cbax = fig.add_subplot(gs[0:2, 1]) # colorbar axis (first row, last column)
+    cbax = fig.add_subplot(gs[1:3, 1]) # colorbar axis (first row, last column)
     cbarticks = list(itertools.compress(bnds, cbarticks)) ## this labels the cbarticks based on the cmap dictionary
     cb = Colorbar(ax = cbax, mappable = cf, orientation = 'vertical', ticklocation = 'right', ticks=cbarticks)
     # cb.set_label(cbarlbl)
@@ -389,7 +389,7 @@ def plot_ivt_cross_sections(ds, cross, line_lst, current_line, model_name, F):
     ###################
     ### TIME SERIES ###
     ###################
-    ax = fig.add_subplot(gs[2, 3])
+    ax = fig.add_subplot(gs[2:, 3])
 
     ax.plot(xs, cross.iwv.values, color='blue', linewidth=0.75)
     ax.set_ylabel('IWV (mm)', color='blue')
