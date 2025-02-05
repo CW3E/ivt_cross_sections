@@ -143,11 +143,11 @@ def calculate_wvflux(uwind, vwind, density, specific_humidity):
 
 def calc_relative_humidity_from_specific_humidity(pressure, temperature, specific_humidity):
     
-    pres = pressure * units.hPa
+    pres = pressure * units(pressure.units)
     temp = temperature.values * units(temperature.units)
     q = specific_humidity.values * units(specific_humidity.units)
     
-    rh = mpcalc.relative_humidity_from_specific_humidity(pres, temp, q)
+    rh = mpcalc.relative_humidity_from_specific_humidity(pres, temp, q).to('percent')
     print(rh.units)
     ## put into a xarray dataarray
     rh = xr.DataArray(rh.magnitude, name="rh", 
@@ -155,6 +155,6 @@ def calc_relative_humidity_from_specific_humidity(pressure, temperature, specifi
                              coords={"hybrid": temperature.hybrid.values, 
                                      "latitude": temperature.latitude.values, 
                                      "longitude": temperature.longitude.values},
-                             attrs={'units': 'percent'})
+                             attrs={'units': str(rh.units)})
     # rh = rh.assign_attrs(units=rh.units)
     return rh

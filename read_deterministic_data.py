@@ -396,7 +396,7 @@ class load_ECMWF_datasets:
         ecmwf_uivt, ecmwf_vivt, ecmwf_ivt = cfuncs.ivt(u_wind=ecmwf_s2d["u_wind"].values,v_wind=ecmwf_s2d["v_wind"].values,specific_humidity=ecmwf_s2d["specific_humidity"], pressure=ecmwf_s2d["pressure"]*100)
 
         ## calculating wvflux
-        rh = cfuncs.calc_relative_humidity_from_specific_humidity(ecmwf_s2d["pressure"].values, ecmwf_s2d["temperature"], ecmwf_s2d["specific_humidity"])
+        rh = cfuncs.calc_relative_humidity_from_specific_humidity(ecmwf_s2d["pressure"], ecmwf_s2d["temperature"], ecmwf_s2d["specific_humidity"])
         density = cfuncs.calculate_air_density(pressure=ecmwf_s2d["pressure"].values, temperature=ecmwf_s2d["temperature"], relative_humidity=rh)
         
         wv_flux = cfuncs.calculate_wvflux(uwind=ecmwf_s2d["u_wind"].values, vwind=ecmwf_s2d["v_wind"].values, density=density, specific_humidity=ecmwf_s2d["specific_humidity"].values)
