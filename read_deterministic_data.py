@@ -219,17 +219,20 @@ class load_GFS_datasets:
         self.F = F
         ## today's year
         year = pd.Timestamp.today().year
-        path_to_data = '/data/downloaded/Forecasts/GFS_025d/{0}/*'.format(year)
+#        path_to_data = '/data/downloaded/Forecasts/GFS_025d/{0}/*'.format(year)
+        path_to_data = '/data/projects/external_datasets/GFS/processed/*'.format(year)
+        print(path_to_data)
         if fdate is None:
             list_of_files = glob.glob(path_to_data)
             self.fpath = max(list_of_files, key=os.path.getctime)
+            print(self.fpath)
             regex = re.compile(r'\d+')
             self.date_string = regex.findall(self.fpath)[-1]
         elif fdate is not None:
             self.date_string = fdate
             self.fpath = '/home/dnash/comet_data/tmp'
-        fname = '/gfs_{0}_f{1}.grb'.format(self.date_string, str(self.F).zfill(3))
-
+#        fname = '/gfs_{0}_f{1}.grb'.format(self.date_string, str(self.F).zfill(3))
+        fname = '/{0}_F{1}.grb2'.format(self.date_string, str(self.F).zfill(3))
         ## for now: copy the files to local space
         # shutil.copy(self.fpath+fname, repo_path+fname) # copy file over to data folder
         self.fname = self.fpath+fname

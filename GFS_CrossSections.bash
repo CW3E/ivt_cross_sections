@@ -9,7 +9,7 @@ mm=`date -d '-'$lag' hours' -u +%m`
 dd=`date -d '-'$lag' hours' -u +%d`
 hh=`date -d '-'$lag' hours' -u +%H`
 
-filename="/data/downloaded/Forecasts/GFS_025d/"$yyyy"/"$yyyy$mm$dd$hh"/gfs_"$yyyy$mm$dd$hh"_f123.grb"
+filename="/data/projects/external_datasets/GFS/processed/"$yyyy$mm$dd$hh"/"$yyyy$mm$dd$hh"_F123.grb2"
 while true; do
  if [[ -e "$filename" ]]; then         # Check if the file exists
   if ! lsof "$filename" > /dev/null 2>&1; then   # Check if the file is being written to using lsof
@@ -33,7 +33,7 @@ echo "STARTING PLOTS AT "$date
 
 try=1
 while [ $try -le 5 ]; do
- timeout 240 rsync --ignore-missing-args -avih /data/projects/operations/ivt_cross_sections/figs/GFS/*.png /data/projects/website/mirror/htdocs/images/gfs/Cross_Sections/new/
+ timeout 240 rsync --ignore-missing-args -avih /data/projects/operations/ivt_cross_sections/figs/GFS/*.png /data/projects/website/mirror/htdocs/images/gfs/Cross_Sections/
  if [ $? -eq 0 ]; then
   break
  fi

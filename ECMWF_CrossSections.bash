@@ -40,7 +40,7 @@ cd /data/projects/operations/ivt_cross_sections
 
 try=1
 while [ $try -le 5 ]; do
- timeout 240 rsync --ignore-missing-args -avih /data/projects/operations/ivt_cross_sections/figs/ECMWF/*.png /data/projects/website/mirror/htdocs/images/ECMWF/Cross_Sections/new/
+ timeout 240 rsync --ignore-missing-args -avih /data/projects/operations/ivt_cross_sections/figs/ECMWF/*.png /data/projects/website/mirror/htdocs/images/ECMWF/Cross_Sections/
  if [ $? -eq 0 ]; then
   break
  fi
