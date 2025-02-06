@@ -337,6 +337,7 @@ class load_ECMWF_datasets:
 
         init_time = datetime.datetime.strptime(date_string,'%Y%m%d%H')
         lead_time = datetime.timedelta(hours=int(F))
+        sp_lead_time = datetime.timedelta(hours=3)
         print(init_time)
         print(lead_time)
 
@@ -351,7 +352,7 @@ class load_ECMWF_datasets:
         self.ecmwf_s2d_filename = fpath+"/S2D{init:%m%d%H%M}{valid:%m%d%H%M}1.grb".format(init=init_time, valid=init_time+lead_time)
         self.ecmwf_s1d_filename = fpath+"/S1D{init:%m%d%H%M}{valid:%m%d%H%M}1".format(init=init_time, valid=init_time+lead_time)
         ## need a special filename for freezing level at F=0
-        self.ecmwf_s1d_special_filename = fpath+"/S1D{init:%m%d%H%M}{valid:%m%d}03001".format(init=init_time, valid=init_time+lead_time)
+        self.ecmwf_s1d_special_filename = fpath+"/S1D{init:%m%d%H%M}{valid:%m%d%H%M}1".format(init=init_time, valid=init_time+sp_lead_time)
 
     def calc_vars(self):
         ecmwf_s2d_vardict = {
